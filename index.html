@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Sport Live Stream</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #0f1115; color: #fff; text-align: center; padding: 30px; }
+        h1 { color: #00ffcc; font-size: 2.5rem; }
+        .kontener { max-width: 600px; margin: 0 auto; }
+        .mecz { background: #1a1d24; padding: 20px; margin: 20px auto; border-radius: 12px; border: 1px solid #2a2f3a; text-align: left; }
+        .status-live { color: #ff3333; font-weight: bold; animation: blink 1.5s infinite; }
+        a { display: inline-block; background: #00ffcc; color: #111; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 6px; margin-top: 15px; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body>
+    <h1>📺 Transmisje Sportowe Na Żywo 📺</h1>
+    <p>Piłka nożna, tenis, siatkówka. Bot odświeża linki automatycznie.</p>
+    <div class="kontener" id="lista-meczow">Ładowanie transmisji...</div>
+
+    <script>
+        fetch('mecze.json')
+            .then(res => res.json())
+            .then(data => {
+                const kontener = document.getElementById('lista-meczow');
+                kontener.innerHTML = '';
+                data.forEach(m => {
+                    const statusKlasa = m.status === "Na żywo" ? "status-live" : "";
+                    const aktywneLink = m.link !== "#" ? href="${m.link}" target="_blank" : href="#" style="background:#444;cursor:not-allowed;";
+                    const tekstPrzycisku = m.status === "Na żywo" ? "OGLĄDAJ TRANSMISJĘ" : "Link pojawi się przed meczem";
+                    
+                    kontener.innerHTML += `
+                        <div class="mecz">
+                            <h2>${m.mecz}</h2>
+                            <p>${m.dyscyplina} | 🏆 ${m.liga} | ⏰ ${m.godzina}</p>
+                            <p>Status: <span class="${statusKlasa}">${m.status}</span></p>
+                            <a ${aktywneLink}>${tekstPrzycisku}</a>
+                        </div>`;
+                });
+            });
+    </script>
+</body>
+</html>
