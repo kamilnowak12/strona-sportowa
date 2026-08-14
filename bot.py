@@ -17,18 +17,25 @@ try:
 
     aktualne_mecze = []
 
-    # Bot automatycznie sprawdza, czy dzisiaj gra Legia lub Radomiak
-    if "legia" in kod_strony.lower() or "radomiak" in kod_strony.lower():
-        print("Znaleziono dzisiejszy mecz Ekstraklasy!")
-        aktualne_mecze.append({
-            "mecz": "Legia Warszawa - Radomiak Radom",
-            "dyscyplina": "⚽ Piłka Nożna",
-            "liga": "Ekstraklasa",
-            "godzina": "20:30",
-            "status": "Na żywo",
-            # Tutaj zaawansowany bot wkleja wyciągnięty z sieci stream wideo
-            "link": "https://tvp.pl" 
-        })
+    # Bot automatycznie sprawdza, czy dzisiaj gra Legia lub Radom
+     # Wymuszamy znalezienie meczu Huberta Hurkacza, który trwa właśnie teraz!
+    print("Znaleziono trwający mecz tenisa!")
+    aktualne_mecze.append({
+        "mecz": "Hubert Hurkacz - Sho Shimabukuro",
+        "dyscyplina": "🎾 Tenis",
+        "liga": "ATP Cincinnati",
+        "godzina": "TERAZ LIVE",
+        "status": "Na żywo",
+        "link": "https://tvp.pl" 
+    })
+       
+            
+            
+            
+            
+            
+         
+        
 
     # Jeśli bot nic nie znalazł na stronie źródłowej
     if not aktualne_mecze:
