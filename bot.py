@@ -3,7 +3,7 @@ import urllib.request
 import re
 
 # Bot będzie szukał meczu Huberta Hurkacza
-SZUKANE_FRAZY = ["Hurkacz", "Hubert"]
+SZUKANE_FRAZY = ["orenburg", "lokomotiv"]
 
 # Przykładowy zagraniczny agregator streamów (na potrzeby testu)
 URL_ZRODLA = "https://meczyki.pl"
@@ -18,7 +18,7 @@ try:
     aktualne_mecze = []
 
     # 1. Sprawdzamy, czy w kodzie strony jest wzmianka o Hurkaczu
-    if "hurkacz" in kod_strony.lower() or "hubert" in kod_strony.lower():
+    if "orenburg" in kod_strony.lower() or "lokomotiv" in kod_strony.lower():
         print("Znaleziono mecz Huberta Hurkacza w kodzie strony!")
         
         # 2. AUTOMATYCZNE SZUKANIE LINKU WIDEO
@@ -31,17 +31,44 @@ try:
                 if l.startswith("http"):
                     prawdziwy_stream = l
                     break
-        
-        # Jeśli nie znalazł bezpośredniego linku, dajemy link do podstrony meczu
-        if prawdziwy_stream == "#":
-            prawdziwy_stream = URL_ZRODLA
-
+  # Dodajemy zeskrapowany mecz o 16:00 do listy
         aktualne_mecze.append({
-            "mecz": "Hubert Hurkacz - Sho Shimabukuro",
-            "dyscyplina": "🎾 Tenis",
-            "liga": "ATP Cincinnati",
-            "godzina": "TERAZ LIVE",
+            "mecz": "Orenburg - Lokomotiv Moskwa",
+            "dyscyplina": "⚽ Piłka Nożna",
+            "liga": "Rosyjska Priemjer Liga",
+            "godzina": "16:00 LIVE",
             "status": "Na żywo",
+            "link": prawdziwy_stream
+        })
+
+    if not aktualne_mecze:
+        aktualne_mecze = [{
+            "mecz": "Brak aktywnych meczów na teraz",
+            "dyscyplina": "-",
+            "liga": "-",
+            "godzina": "-",
+            "status": "Oczekuje",
+            "link": "#"
+        }]
+
+    # Zapis danych i automatyczny eksport na Vercel
+    with open("mecze.json", "w", encoding="utf-8") as f:
+        json.dump(aktualne_mecze, f, ensure_ascii=False, indent=2)
+    print("Plik mecze.json zaktualizowany o prawdziwy link!")
+
+except Exception as e:
+    print(f"Błąd bota podczas scrapowania: {e}")
+      
+        
+        
+            
+
+    
+            
+            
+            
+            
+            
             "link": prawdziwy_stream  # TUTAJ BOT WKLEJA WYCIĄGNIĘTY LINK!
         })
 
