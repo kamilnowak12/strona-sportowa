@@ -1,10 +1,10 @@
-
+[
   {
     "mecz": "Orenburg - Lokomotiv Moskwa",
     "dyscyplina": "⚽ Piłka Nożna",
     "liga": "Rosyjska Priemjer Liga",
-    "godzina": "16:00 LIVE",
-    "status": "Na żywo",
-    "link": "https://www.meczyki.pl/"
+    "godzina": "16:00",
+    "status": "Oczekuje",
+    "link": "#"
   }
 ]
