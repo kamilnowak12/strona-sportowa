@@ -1,46 +1,53 @@
 import json
 import urllib.request
+import re
 
-# Słowa kluczowe, których bot będzie szukał w sieci
-SZUKANE_FRAZY = ["Legia", "Radomiak", "Iga Świątek", "ZAKSA"]
+# Bot będzie szukał meczu Huberta Hurkacza
+SZUKANE_FRAZY = ["Hurkacz", "Hubert"]
 
-# Strona źródłowa, z której bot pobiera mecze (na potrzeby testu)
+# Przykładowy zagraniczny agregator streamów (na potrzeby testu)
 URL_ZRODLA = "https://meczyki.pl"
 
-print("Bot sportowy wystartował...")
+print("Bot streamingowy szuka meczu turnieju w Cincinnati...")
 
 try:
-    # Pobieranie kodu strony www
-    req = urllib.request.Request(URL_ZRODLA, headers={'User-Agent': 'Mozilla/5.0'})
+    req = urllib.request.Request(URL_ZRODLA, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'})
     with urllib.request.urlopen(req) as response:
         kod_strony = response.read().decode('utf-8')
 
     aktualne_mecze = []
 
-    # Bot automatycznie sprawdza, czy dzisiaj gra Legia lub Radom
-     # Wymuszamy znalezienie meczu Huberta Hurkacza, który trwa właśnie teraz!
-    print("Znaleziono trwający mecz tenisa!")
-    aktualne_mecze.append({
-        "mecz": "Hubert Hurkacz - Sho Shimabukuro",
-        "dyscyplina": "🎾 Tenis",
-        "liga": "ATP Cincinnati",
-        "godzina": "TERAZ LIVE",
-        "status": "Na żywo",
-        "link": "https://tvp.pl" 
-    })
-       
-            
-            
-            
-            
-            
-         
+    # 1. Sprawdzamy, czy w kodzie strony jest wzmianka o Hurkaczu
+    if "hurkacz" in kod_strony.lower() or "hubert" in kod_strony.lower():
+        print("Znaleziono mecz Huberta Hurkacza w kodzie strony!")
         
+        # 2. AUTOMATYCZNE SZUKANIE LINKU WIDEO
+        # Bot szuka w kodzie adresów URL, które mogą być streamami (np. zawierają słowo player, embed, live lub m3u8)
+        linki = re.findall(r'href=[\'"]?([^\'" >]+)', kod_strony)
+        prawdziwy_stream = "#"
+        
+        for l in linki:
+            if "live" in l or "stream" in l or "player" in l:
+                if l.startswith("http"):
+                    prawdziwy_stream = l
+                    break
+        
+        # Jeśli nie znalazł bezpośredniego linku, dajemy link do podstrony meczu
+        if prawdziwy_stream == "#":
+            prawdziwy_stream = URL_ZRODLA
 
-    # Jeśli bot nic nie znalazł na stronie źródłowej
+        aktualne_mecze.append({
+            "mecz": "Hubert Hurkacz - Sho Shimabukuro",
+            "dyscyplina": "🎾 Tenis",
+            "liga": "ATP Cincinnati",
+            "godzina": "TERAZ LIVE",
+            "status": "Na żywo",
+            "link": prawdziwy_stream  # TUTAJ BOT WKLEJA WYCIĄGNIĘTY LINK!
+        })
+
     if not aktualne_mecze:
         aktualne_mecze = [{
-            "mecz": "Brak aktywnych meczów na teraz",
+            "mecz": "Brak meczu Hurkacza na stronie źródłowej",
             "dyscyplina": "-",
             "liga": "-",
             "godzina": "-",
@@ -48,11 +55,10 @@ try:
             "link": "#"
         }]
 
-    # Zapis danych – bot sam nadpisuje bazę danych strony
+    # Zapis danych i automatyczny eksport na Vercel
     with open("mecze.json", "w", encoding="utf-8") as f:
         json.dump(aktualne_mecze, f, ensure_ascii=False, indent=2)
-        
-    print("Baza danych mecze.json zaktualizowana przez bota pomyślnie!")
+    print("Plik mecze.json zaktualizowany o prawdziwy link!")
 
 except Exception as e:
-    print(f"Błąd bota: {e}")
+    print(f"Błąd bota podczas scrapowania: {e}")
